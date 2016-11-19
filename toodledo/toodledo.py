@@ -262,17 +262,17 @@ class Toodledo:
 			self.session = self.Authorize()
 			return func(self.session)
 
-	def GetAccount():
-		ReauthorizeIfNecessary(partial(GetAccount))
+	def GetAccount(self):
+		self.ReauthorizeIfNecessary(partial(GetAccount))
 
-	def GetTasks(params):
-		ReauthorizeIfNecessary(partial(GetTasks, params=params))
+	def GetTasks(self, params):
+		self.ReauthorizeIfNecessary(partial(GetTasks, params=params))
 
-	def EditTasks(params):
-		ReauthorizeIfNecessary(partial(EditTasks, params=params))
+	def EditTasks(self, params):
+		self.ReauthorizeIfNecessary(partial(EditTasks, params=params))
 
-	def AddTasks(params):
-		ReauthorizeIfNecessary(partial(AddTasks, params=params))
+	def AddTasks(self, params):
+		self.ReauthorizeIfNecessary(partial(AddTasks, params=params))
 
-	def DeleteTasks(params):
-		ReauthorizeIfNecessary(partial(DeleteTasks, params=params))
+	def DeleteTasks(self, params):
+		self.ReauthorizeIfNecessary(partial(DeleteTasks, params=params))
