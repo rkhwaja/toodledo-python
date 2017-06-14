@@ -7,3 +7,4 @@ Usage
 
 .. code:: python
 
+toodledo = Toodledo(clientId="YourClientId", clientSecret="YourClientSecret", tokenStorage=TokenStorageFile(YourConfigFile), scope="basic tasks notes folders write")
