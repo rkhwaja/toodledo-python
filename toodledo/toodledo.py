@@ -202,6 +202,21 @@ def DeleteTasks(session, taskList):
 			break
 		start += limit
 
+class TokenStorageFile:
+	def __init__(self, path):
+		self.path = path
+
+	def Save(self, token):
+		with open(self.path, "w") as f:
+			dump(token, f)
+
+	def Load(self):
+		try:
+			with open(self.path, "r") as f:
+				return load(f)
+		except FileNotFoundError:
+			return None
+
 class Toodledo:
 	tokenUrl = "https://api.toodledo.com/3/account/token.php"
 	getAccountUrl = "https://api.toodledo.com/3/account/get.php"
@@ -216,10 +231,6 @@ class Toodledo:
 		self.clientSecret = clientSecret
 		self.scope = scope
 		self.session = self.Session()
-
-	def TokenSaver(self, token):
-		with open(self.tokenStorage, "w") as f:
-			dump(token, f)
 
 	def Authorize(self):
 		authorizationBaseUrl = "https://api.toodledo.com/3/account/authorize.php"
@@ -236,15 +247,13 @@ class Toodledo:
 
 		redirectResponse = input("Paste the full redirect URL here:")
 
-		token = session.fetch_token(Toodledo.tokenUrl, client_secret=self.clientSecret, authorization_response=redirectResponse, token_updater=self.TokenSaver)
-		self.TokenSaver(token)
+		token = session.fetch_token(Toodledo.tokenUrl, client_secret=self.clientSecret, authorization_response=redirectResponse, token_updater=self.tokenStorage.Save)
+		self.tokenStorage.Save(token)
 		return token
 
 	def Session(self):
-		try:
-			with open(self.tokenStorage, "r") as f:
-				token = load(f)
-		except FileNotFoundError:
+		token = self.tokenStorage.Load()
+		if token is None:
 			token = self.Authorize()
 
 		return OAuth2Session(
@@ -252,12 +261,12 @@ class Toodledo:
 			token=token,
 			auto_refresh_kwargs={"client_id": self.clientId, "client_secret": self.clientSecret},
 			auto_refresh_url=Toodledo.tokenUrl,
-			token_updater=self.TokenSaver)
+			token_updater=self.tokenStorage.Save)
 
 	def ReauthorizeIfNecessary(self, func):
 		try:
 			return func(self.session)
-		except TokenMissingError:
+		except ToodledoError:
 			# this can happen if the refresh token has expired
 			self.session = self.Authorize()
 			return func(self.session)
