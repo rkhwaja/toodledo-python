@@ -280,8 +280,8 @@ class Toodledo:
 	def EditTasks(self, params):
 		self.ReauthorizeIfNecessary(partial(EditTasks, params=params))
 
-	def AddTasks(self, params):
-		self.ReauthorizeIfNecessary(partial(AddTasks, params=params))
+	def AddTasks(self, taskList):
+		self.ReauthorizeIfNecessary(partial(AddTasks, taskList=taskList))
 
 	def DeleteTasks(self, params):
 		self.ReauthorizeIfNecessary(partial(DeleteTasks, params=params))
