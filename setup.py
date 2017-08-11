@@ -15,9 +15,10 @@ setup(name="toodledo",
 	packages=find_packages(),
 	install_requires=["marshmallow", "requests", "requests_oauthlib"],
 	classifiers=[
-		"Development Status :: 3 - Alpha",
+		"Development Status :: 4 - Beta",
 		"Intended Audience :: Developers",
-		"Programming Language :: Python :: 3.5"
+		"Programming Language :: Python :: 3.5",
+		"Programming Language :: Python :: 3.6"
 	],
 	keywords="",
 )
