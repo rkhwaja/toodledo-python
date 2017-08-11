@@ -3,7 +3,7 @@ from functools import partial
 from json import dump, dumps, load
 from logging import debug, error
 
-from marshmallow import fields, post_load, pre_load, Schema
+from marshmallow import fields, post_load, Schema
 from marshmallow.validate import Length
 from requests_oauthlib import OAuth2Session
 
@@ -19,7 +19,7 @@ class ToodledoDate(fields.Field):
 			return 0
 		return datetime(year=value.year, month=value.month, day=value.day).timestamp()
 
-	def _deserialize(self, value, attr, obj):
+	def _deserialize(self, value, attr, data):
 		if value == 0:
 			return None
 		return date.fromtimestamp(float(value))
@@ -33,7 +33,7 @@ class ToodledoDatetime(fields.Field):
 			return 0
 		return value.timestamp()
 
-	def _deserialize(self, value, attr, obj):
+	def _deserialize(self, value, attr, data):
 		if value == 0:
 			return None
 		return datetime.fromtimestamp(float(value))
@@ -43,7 +43,7 @@ class ToodledoTags(fields.Field):
 		assert isinstance(value, list)
 		return ", ".join(sorted(value))
 
-	def _deserialize(self, value, attr, obj):
+	def _deserialize(self, value, attr, data):
 		assert isinstance(value, str)
 		if value == "":
 			return []
@@ -181,7 +181,7 @@ def AddTasks(session, taskList):
 		response = session.post(Toodledo.addTasksUrl, params={"tasks":dumps(listDump)})
 		response.raise_for_status()
 		if "errorCode" in response.json():
-			raise ToodledoError(tasks["errorCode"])
+			raise ToodledoError(response.json()["errorCode"])
 		if len(taskList[start: start + limit]) < limit:
 			break
 		start += limit
@@ -197,7 +197,7 @@ def DeleteTasks(session, taskList):
 		response = session.post(Toodledo.deleteTasksUrl, params={"tasks":dumps(taskIdList[start: start + limit])})
 		response.raise_for_status()
 		if "errorCode" in response.json():
-			raise ToodledoError(tasks["errorCode"])
+			raise ToodledoError(response.json()["errorCode"])
 		if len(taskIdList[start: start + limit]) < limit:
 			break
 		start += limit
@@ -278,10 +278,10 @@ class Toodledo:
 		self.ReauthorizeIfNecessary(partial(GetTasks, params=params))
 
 	def EditTasks(self, params):
-		self.ReauthorizeIfNecessary(partial(EditTasks, params=params))
+		self.ReauthorizeIfNecessary(partial(EditTasks, taskList=params))
 
 	def AddTasks(self, taskList):
 		self.ReauthorizeIfNecessary(partial(AddTasks, taskList=taskList))
 
 	def DeleteTasks(self, params):
-		self.ReauthorizeIfNecessary(partial(DeleteTasks, params=params))
+		self.ReauthorizeIfNecessary(partial(DeleteTasks, taskList=params))
