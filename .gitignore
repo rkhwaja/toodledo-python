@@ -1,3 +1,5 @@
 build/*
 dist/*
 toodledo.egg-info/*
+.pytest_cache
+Pipfile.lock
