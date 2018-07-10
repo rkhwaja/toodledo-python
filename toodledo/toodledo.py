@@ -1,3 +1,5 @@
+"""Implementation"""
+
 from datetime import date, datetime
 from functools import partial
 from json import dump, dumps, load
@@ -13,7 +15,7 @@ from requests_oauthlib import OAuth2Session
 # states for this field are:
 # a GMT timestamp with the time set to noon
 # unset, represented by API as 0
-class ToodledoDate(fields.Field):
+class _ToodledoDate(fields.Field):
 	def _serialize(self, value, attr, obj):
 		if value is None:
 			return 0
@@ -27,7 +29,7 @@ class ToodledoDate(fields.Field):
 # states for this field are:
 # a GMT timestamp
 # unset, represented by API as 0
-class ToodledoDatetime(fields.Field):
+class _ToodledoDatetime(fields.Field):
 	def _serialize(self, value, attr, obj):
 		if value is None:
 			return 0
@@ -38,7 +40,7 @@ class ToodledoDatetime(fields.Field):
 			return None
 		return datetime.fromtimestamp(float(value))
 
-class ToodledoTags(fields.Field):
+class _ToodledoTags(fields.Field):
 	def _serialize(self, value, attr, obj):
 		assert isinstance(value, list)
 		return ", ".join(sorted(value))
@@ -50,6 +52,7 @@ class ToodledoTags(fields.Field):
 		return [x.strip() for x in value.split(",")]
 
 class Task:
+	"""Represents a single task"""
 	def __init__(self, **data):
 		for name, item in data.items():
 			setattr(self, name, item)
@@ -59,14 +62,16 @@ class Task:
 		return "<Task {}>".format(", ".join(attributes))
 
 	def IsComplete(self):
-		return self.completedDate is not None
+		"""Indicate whether this task is complete"""
+		return self.completedDate is not None # pylint: disable=no-member
 
 class ToodledoError(Exception):
+	"""Custom error for wrapping API error codes"""
 	errorCodeToMessage = {
-		  1: "No access token was given",
-		  2: "The access token was invalid",
-		  3: "Too many API requests",
-		  4: "The API is offline for maintenance",
+		1: "No access token was given",
+		2: "The access token was invalid",
+		3: "Too many API requests",
+		4: "The API is offline for maintenance",
 		601: "Your task must have a title.",
 		602: "Only 50 tasks can be added/edited/deleted at a time.",
 		603: "The maximum number of tasks allowed per account (20000) has been reached",
@@ -89,46 +94,48 @@ class ToodledoError(Exception):
 		errorMessage = ToodledoError.errorCodeToMessage.get(errorCode, "Unknown error")
 		super().__init__(errorMessage, errorCode)
 
-class TaskSchema(Schema):
+class _TaskSchema(Schema):
 	id_ = fields.Integer(dump_to="id", load_from="id")
 	title = fields.String(validate=Length(max=255))
-	tags = ToodledoTags(dump_to="tag", load_from="tag")
-	startDate = ToodledoDate(dump_to="startdate", load_from="startdate")
-	dueDate = ToodledoDate(dump_to="duedate", load_from="duedate")
-	modified = ToodledoDatetime()
-	completedDate = ToodledoDate(dump_to="completed", load_from="completed")
+	tags = _ToodledoTags(dump_to="tag", load_from="tag")
+	startDate = _ToodledoDate(dump_to="startdate", load_from="startdate")
+	dueDate = _ToodledoDate(dump_to="duedate", load_from="duedate")
+	modified = _ToodledoDatetime()
+	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
 
 	@post_load
-	def MakeTask(self, data):
+	def _MakeTask(self, data): # pylint: disable=no-self-use
 		return Task(**data)
 
-class Account:
+class _Account: # pylint: disable=too-few-public-methods
 	def __init__(self, lastEditTask, lastDeleteTask):
 		self.lastEditTask = lastEditTask
 		self.lastDeleteTask = lastDeleteTask
 
 	def __repr__(self):
-		return "<AccountInfo lastEditTask={}, lastDeleteTask={}>".format(self.lastEditTask, self.lastDeleteTask)
+		return "<_Account lastEditTask={}, lastDeleteTask={}>".format(self.lastEditTask, self.lastDeleteTask)
 
-class AccountSchema(Schema):
-	lastEditTask = ToodledoDatetime(dump_to="lastedit_task", load_from="lastedit_task")
-	lastDeleteTask = ToodledoDatetime(dump_to="lastdelete_task", load_from="lastdelete_task")
+class _AccountSchema(Schema):
+	lastEditTask = _ToodledoDatetime(dump_to="lastedit_task", load_from="lastedit_task")
+	lastDeleteTask = _ToodledoDatetime(dump_to="lastdelete_task", load_from="lastdelete_task")
 
 	@post_load
-	def MakeAccount(self, data):
-		return Account(data["lastEditTask"], data["lastDeleteTask"])
+	def _MakeAccount(self, data): # pylint: disable=no-self-use
+		return _Account(data["lastEditTask"], data["lastDeleteTask"])
 
-def DumpTaskList(taskList):
+def _DumpTaskList(taskList):
 	# TODO - pass many=True to the schema instead of this custom stuff
-	schema = TaskSchema()
+	schema = _TaskSchema()
 	return [schema.dump(task).data for task in taskList]
 
 def GetAccount(session):
+	"""Get the Toodledo account"""
 	accountInfo = session.get(Toodledo.getAccountUrl)
 	accountInfo.raise_for_status()
-	return AccountSchema().load(accountInfo.json()).data
+	return _AccountSchema().load(accountInfo.json()).data
 
 def GetTasks(session, params):
+	"""Get the tasks filtered by the given params"""
 	allTasks = []
 	limit = 1000 # single request limit
 	start = 0
@@ -148,10 +155,11 @@ def GetTasks(session, params):
 		if len(tasks[1:]) < limit:
 			break
 		start += limit
-	schema = TaskSchema()
+	schema = _TaskSchema()
 	return [schema.load(x).data for x in allTasks]
 
 def EditTasks(session, taskList):
+	"""Change the existing tasks to be the same as the ones in the given list"""
 	if len(taskList) == 0:
 		return
 	debug("Total tasks to edit: {}".format(len(taskList)))
@@ -159,34 +167,36 @@ def EditTasks(session, taskList):
 	start = 0
 	while True:
 		debug("Start: {}".format(start))
-		listDump = DumpTaskList(taskList[start: start + limit])
-		response = session.post(Toodledo.editTasksUrl, params={"tasks":dumps(listDump)})
+		listDump = _DumpTaskList(taskList[start:start + limit])
+		response = session.post(Toodledo.editTasksUrl, params={"tasks": dumps(listDump)})
 		response.raise_for_status()
 		debug("Response: {},{}".format(response, response.text))
 		taskResponse = response.json()
 		if "errorCode" in taskResponse:
 			raise ToodledoError(taskResponse["errorCode"])
-		if len(taskList[start: start + limit]) < limit:
+		if len(taskList[start:start + limit]) < limit:
 			break
 		start += limit
 
 def AddTasks(session, taskList):
+	"""Add the given tasks"""
 	if len(taskList) == 0:
 		return
 	limit = 50 # single request limit
 	start = 0
 	while True:
 		debug("Start: {}".format(start))
-		listDump = DumpTaskList(taskList[start: start + limit])
-		response = session.post(Toodledo.addTasksUrl, params={"tasks":dumps(listDump)})
+		listDump = _DumpTaskList(taskList[start:start + limit])
+		response = session.post(Toodledo.addTasksUrl, params={"tasks": dumps(listDump)})
 		response.raise_for_status()
 		if "errorCode" in response.json():
 			raise ToodledoError(response.json()["errorCode"])
-		if len(taskList[start: start + limit]) < limit:
+		if len(taskList[start:start + limit]) < limit:
 			break
 		start += limit
 
 def DeleteTasks(session, taskList):
+	"""Delete the given tasks"""
 	if len(taskList) == 0:
 		return
 	taskIdList = [task.id_ for task in taskList]
@@ -194,23 +204,26 @@ def DeleteTasks(session, taskList):
 	start = 0
 	while True:
 		debug("Start: {}".format(start))
-		response = session.post(Toodledo.deleteTasksUrl, params={"tasks":dumps(taskIdList[start: start + limit])})
+		response = session.post(Toodledo.deleteTasksUrl, params={"tasks": dumps(taskIdList[start:start + limit])})
 		response.raise_for_status()
 		if "errorCode" in response.json():
 			raise ToodledoError(response.json()["errorCode"])
-		if len(taskIdList[start: start + limit]) < limit:
+		if len(taskIdList[start:start + limit]) < limit:
 			break
 		start += limit
 
 class TokenStorageFile:
+	"""Stores the API tokens as a file"""
 	def __init__(self, path):
 		self.path = path
 
 	def Save(self, token):
+		"""Save the given token. Called by Toodledo class"""
 		with open(self.path, "w") as f:
 			dump(token, f)
 
 	def Load(self):
+		"""Load and return the token. Called by Toodledo class"""
 		try:
 			with open(self.path, "r") as f:
 				return load(f)
@@ -218,6 +231,7 @@ class TokenStorageFile:
 			return None
 
 class Toodledo:
+	"""Wrapper for the Toodledo v3 API"""
 	tokenUrl = "https://api.toodledo.com/3/account/token.php"
 	getAccountUrl = "https://api.toodledo.com/3/account/get.php"
 	getTasksUrl = "https://api.toodledo.com/3/tasks/get.php"
@@ -232,7 +246,7 @@ class Toodledo:
 		self.scope = scope
 		self.session = self.Session()
 
-	def Authorize(self):
+	def _Authorize(self):
 		authorizationBaseUrl = "https://api.toodledo.com/3/account/authorize.php"
 		session = OAuth2Session(client_id=self.clientId, scope=self.scope)
 		authorizationUrl, _ = session.authorization_url(authorizationBaseUrl)
@@ -252,36 +266,41 @@ class Toodledo:
 		return token
 
 	def Session(self):
+		"""Create and return a requests OAuth2 session"""
 		token = self.tokenStorage.Load()
 		if token is None:
-			token = self.Authorize()
+			token = self._Authorize()
 
 		return OAuth2Session(
-			client_id=self.clientId,
-			token=token,
-			auto_refresh_kwargs={"client_id": self.clientId, "client_secret": self.clientSecret},
-			auto_refresh_url=Toodledo.tokenUrl,
-			token_updater=self.tokenStorage.Save)
+			client_id=self.clientId, token=token, auto_refresh_kwargs={
+				"client_id": self.clientId,
+				"client_secret": self.clientSecret
+			}, auto_refresh_url=Toodledo.tokenUrl, token_updater=self.tokenStorage.Save)
 
-	def ReauthorizeIfNecessary(self, func):
+	def _ReauthorizeIfNecessary(self, func):
 		try:
 			return func(self.session)
 		except ToodledoError:
 			# this can happen if the refresh token has expired
-			self.session = self.Authorize()
+			self.session = self._Authorize()
 			return func(self.session)
 
 	def GetAccount(self):
-		self.ReauthorizeIfNecessary(partial(GetAccount))
+		"""Get the Toodledo account"""
+		self._ReauthorizeIfNecessary(partial(GetAccount))
 
 	def GetTasks(self, params):
-		self.ReauthorizeIfNecessary(partial(GetTasks, params=params))
+		"""Get the tasks filtered by the given params"""
+		self._ReauthorizeIfNecessary(partial(GetTasks, params=params))
 
 	def EditTasks(self, params):
-		self.ReauthorizeIfNecessary(partial(EditTasks, taskList=params))
+		"""Change the existing tasks to be the same as the ones in the given list"""
+		self._ReauthorizeIfNecessary(partial(EditTasks, taskList=params))
 
 	def AddTasks(self, taskList):
-		self.ReauthorizeIfNecessary(partial(AddTasks, taskList=taskList))
+		"""Add the given tasks"""
+		self._ReauthorizeIfNecessary(partial(AddTasks, taskList=taskList))
 
 	def DeleteTasks(self, params):
-		self.ReauthorizeIfNecessary(partial(DeleteTasks, taskList=params))
+		"""Delete the given tasks"""
+		self._ReauthorizeIfNecessary(partial(DeleteTasks, taskList=params))
