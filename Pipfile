@@ -12,4 +12,5 @@ requests-oauthlib = "*"
 requests = "*"
 
 [dev-packages]
+pylint = "*"
 pytest = "*"

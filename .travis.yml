@@ -3,6 +3,6 @@ python:
 - "3.6"
 - "3.7"
 install:
-- pip install marshmallow requests-oauthlib requests
+- pip install marshmallow pylint requests-oauthlib requests
 script:
-- pytest
+- pylint toodledo
