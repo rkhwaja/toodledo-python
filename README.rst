@@ -9,7 +9,10 @@ Usage
 
 .. code-block:: python
 
-  toodledo = Toodledo(clientId="YourClientId", clientSecret="YourClientSecret", tokenStorage=TokenStorageFile(YourConfigFile, scope="basic tasks notes folders write")
+  toodledo = Toodledo(
+    clientId="YourClientId",
+    clientSecret="YourClientSecret",
+    tokenStorage=TokenStorageFile(YourConfigFile, scope="basic tasks notes folders write"))
 
   account = toodledo.GetAccount()
 
