@@ -12,7 +12,8 @@ Usage
   toodledo = Toodledo(
     clientId="YourClientId",
     clientSecret="YourClientSecret",
-    tokenStorage=TokenStorageFile(YourConfigFile, scope="basic tasks notes folders write"))
+    tokenStorage=TokenStorageFile(YourConfigFile),
+    scope="basic tasks notes folders write")
 
   account = toodledo.GetAccount()
 
