@@ -7,10 +7,10 @@ Usage
 
 .. image:: https://travis-ci.org/rkhwaja/toodledo-python.svg?branch=master
 
-.. code:: python
+.. code-block:: python
 
-toodledo = Toodledo(clientId="YourClientId", clientSecret="YourClientSecret", tokenStorage=TokenStorageFile(YourConfigFile, scope="basic tasks notes folders write")
+  toodledo = Toodledo(clientId="YourClientId", clientSecret="YourClientSecret", tokenStorage=TokenStorageFile(YourConfigFile, scope="basic tasks notes folders write")
 
-account = toodledo.GetAccount()
+  account = toodledo.GetAccount()
 
-allTasks = toodledo.GetTasks(params={})
+  allTasks = toodledo.GetTasks(params={})
