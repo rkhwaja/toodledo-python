@@ -7,8 +7,12 @@ Usage
 
 .. code:: python
 
+.. image:: https://travis-ci.org/rkhwaja/toodledo-python.svg?branch=master
+
 toodledo = Toodledo(clientId="YourClientId", clientSecret="YourClientSecret", tokenStorage=TokenStorageFile(YourConfigFile, scope="basic tasks notes folders write")
 
 account = toodledo.GetAccount()
 
 allTasks = toodledo.GetTasks(params={})
+
+https://travis-ci.org/rkhwaja/toodledo-python.svg?branch=master
