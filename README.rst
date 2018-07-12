@@ -6,6 +6,7 @@ Usage
 =====
 
 .. image:: https://travis-ci.org/rkhwaja/toodledo-python.svg?branch=master
+   :target: https://travis-ci.org/rkhwaja/toodledo-python
 
 .. code-block:: python
 
