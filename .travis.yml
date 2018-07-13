@@ -2,7 +2,11 @@ language: python
 python:
 - "3.5"
 - "3.6"
+- "3.7"
+dist: xenial
+sudo: true
 install:
-- pip install marshmallow pylint requests-oauthlib requests
+- pip install marshmallow requests-oauthlib requests
+- pip install --pre pylint astroid
 script:
 - pylint toodledo
