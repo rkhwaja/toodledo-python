@@ -97,11 +97,15 @@ class ToodledoError(Exception):
 class _TaskSchema(Schema):
 	id_ = fields.Integer(dump_to="id", load_from="id")
 	title = fields.String(validate=Length(max=255))
-	tags = _ToodledoTags(dump_to="tag", load_from="tag")
-	startDate = _ToodledoDate(dump_to="startdate", load_from="startdate")
-	dueDate = _ToodledoDate(dump_to="duedate", load_from="duedate")
-	modified = _ToodledoDatetime()
-	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
+	modified = ToodledoDatetime()
+	completedDate = ToodledoDate(dump_to="completed", load_from="completed")
+	folder = fields.String(validate=Length(max=255))
+	context = fields.String(validate=Length(max=255))
+	tags = ToodledoTags(dump_to="tag", load_from="tag")
+	priority = fields.Integer(dump_to="priority", load_from="priority")
+	star = fields.Integer(dump_to="star", load_from="star")
+	dueTime = ToodledoDatetime()
+	startTime = ToodledoDatetime()
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use
@@ -136,7 +140,9 @@ def GetAccount(session):
 
 def GetTasks(session, params):
 	"""Get the tasks filtered by the given params"""
-	allTasks = []
+	import re
+	num_tasks = 0
+	allTasks = ''
 	limit = 1000 # single request limit
 	start = 0
 	while True:
@@ -145,18 +151,33 @@ def GetTasks(session, params):
 		params["num"] = limit
 		response = session.get(Toodledo.getTasksUrl, params=params)
 		response.raise_for_status()
-		tasks = response.json()
+		tasks = response.text
 		if "errorCode" in tasks:
 			error("Toodledo error: {}".format(tasks))
 			raise ToodledoError(tasks["errorCode"])
-		# the first field contains the count or the error code
-		allTasks.extend(tasks[1:])
-		debug("Retrieved {} tasks".format(len(tasks[1:])))
-		if len(tasks[1:]) < limit:
-			break
+		
+		# Remove first result with merely the totals
+		match = re.search(r'\[{"num":\s*([0-9,.]+),\s*"total":\s*([0-9,.]+)},\s*(.*)\]', tasks, re.MULTILINE)
+		if match:
+			num_tasks = int(match.group(1))
+			total_tasks = int(match.group(2))
+			tasks = match.group(3)
+		else:
+			raise ToodledoError('Regex scrubber did not match: {}'.format(tasks))
+
+		if len(allTasks) > 0:
+			allTasks += ', ' + tasks
+		else:
+			allTasks += tasks
+		
 		start += limit
-	schema = _TaskSchema()
-	return [schema.load(x).data for x in allTasks]
+		if start > total_tasks:
+			break
+	
+	debug("Retrieved {:,} tasks".format(total_tasks))
+	json_tasks = eval('[' + allTasks+ ']')
+	task_serializer = _TaskSchema(many=True)
+	return task_serializer.load(json_tasks).data
 
 def EditTasks(session, taskList):
 	"""Change the existing tasks to be the same as the ones in the given list"""
@@ -291,7 +312,7 @@ class Toodledo:
 
 	def GetTasks(self, params):
 		"""Get the tasks filtered by the given params"""
-		self._ReauthorizeIfNecessary(partial(GetTasks, params=params))
+		return self._ReauthorizeIfNecessary(partial(GetTasks, params=params))
 
 	def EditTasks(self, params):
 		"""Change the existing tasks to be the same as the ones in the given list"""
