@@ -97,15 +97,15 @@ class ToodledoError(Exception):
 class _TaskSchema(Schema):
 	id_ = fields.Integer(dump_to="id", load_from="id")
 	title = fields.String(validate=Length(max=255))
-	modified = ToodledoDatetime()
-	completedDate = ToodledoDate(dump_to="completed", load_from="completed")
+	modified = _ToodledoDatetime()
+	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
 	folder = fields.String(validate=Length(max=255))
 	context = fields.String(validate=Length(max=255))
-	tags = ToodledoTags(dump_to="tag", load_from="tag")
+	tags = _ToodledoTags(dump_to="tag", load_from="tag")
 	priority = fields.Integer(dump_to="priority", load_from="priority")
 	star = fields.Integer(dump_to="star", load_from="star")
-	dueTime = ToodledoDatetime()
-	startTime = ToodledoDatetime()
+	dueTime = _ToodledoDatetime()
+	startTime = _ToodledoDatetime()
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use
@@ -141,7 +141,7 @@ def GetAccount(session):
 def GetTasks(session, params):
 	"""Get the tasks filtered by the given params"""
 	import re
-	num_tasks = 0
+	#num_tasks = 0
 	allTasks = ''
 	limit = 1000 # single request limit
 	start = 0
@@ -155,11 +155,11 @@ def GetTasks(session, params):
 		if "errorCode" in tasks:
 			error("Toodledo error: {}".format(tasks))
 			raise ToodledoError(tasks["errorCode"])
-		
+
 		# Remove first result with merely the totals
 		match = re.search(r'\[{"num":\s*([0-9,.]+),\s*"total":\s*([0-9,.]+)},\s*(.*)\]', tasks, re.MULTILINE)
 		if match:
-			num_tasks = int(match.group(1))
+			#num_tasks = int(match.group(1))
 			total_tasks = int(match.group(2))
 			tasks = match.group(3)
 		else:
@@ -169,11 +169,11 @@ def GetTasks(session, params):
 			allTasks += ', ' + tasks
 		else:
 			allTasks += tasks
-		
+
 		start += limit
 		if start > total_tasks:
 			break
-	
+
 	debug("Retrieved {:,} tasks".format(total_tasks))
 	json_tasks = eval('[' + allTasks+ ']')
 	task_serializer = _TaskSchema(many=True)
