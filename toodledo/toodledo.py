@@ -141,6 +141,7 @@ def GetAccount(session):
 def GetTasks(session, params):
 	"""Get the tasks filtered by the given params"""
 	import re
+	import ast
 	#num_tasks = 0
 	allTasks = ''
 	limit = 1000 # single request limit
@@ -175,7 +176,7 @@ def GetTasks(session, params):
 			break
 
 	debug("Retrieved {:,} tasks".format(total_tasks))
-	json_tasks = eval('[' + allTasks+ ']')
+	json_tasks = ast.literal_eval('[' + allTasks+ ']')
 	task_serializer = _TaskSchema(many=True)
 	return task_serializer.load(json_tasks).data
 
