@@ -53,6 +53,7 @@ class _ToodledoTags(fields.Field):
 
 class Task:
 	"""Represents a single task"""
+
 	def __init__(self, **data):
 		for name, item in data.items():
 			setattr(self, name, item)
@@ -72,6 +73,9 @@ class ToodledoError(Exception):
 		2: "The access token was invalid",
 		3: "Too many API requests",
 		4: "The API is offline for maintenance",
+		101: "SSL connection is required",
+		102: "There was an error requesting a token",
+		103: "Too many token requests",
 		601: "Your task must have a title.",
 		602: "Only 50 tasks can be added/edited/deleted at a time.",
 		603: "The maximum number of tasks allowed per account (20000) has been reached",
@@ -214,6 +218,7 @@ def DeleteTasks(session, taskList):
 
 class TokenStorageFile:
 	"""Stores the API tokens as a file"""
+
 	def __init__(self, path):
 		self.path = path
 
