@@ -2,11 +2,11 @@ Overview
 ========
 Python wrapper for the Toodledo v3 API which is documented at http://api.toodledo.com/3/
 
-Usage
-=====
-
 .. image:: https://travis-ci.org/rkhwaja/toodledo-python.svg?branch=master
    :target: https://travis-ci.org/rkhwaja/toodledo-python
+
+Usage
+=====
 
 .. code-block:: python
 
