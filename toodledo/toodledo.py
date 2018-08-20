@@ -296,7 +296,7 @@ class Toodledo:
 
 	def GetTasks(self, params):
 		"""Get the tasks filtered by the given params"""
-		self._ReauthorizeIfNecessary(partial(GetTasks, params=params))
+		return self._ReauthorizeIfNecessary(partial(GetTasks, params=params))
 
 	def EditTasks(self, params):
 		"""Change the existing tasks to be the same as the ones in the given list"""
