@@ -13,3 +13,4 @@ def test_get_account(toodledo):
 
 def test_get_tasks(toodledo):
 	tasks = toodledo.GetTasks(params={})
+	assert isinstance(tasks, list)

@@ -14,3 +14,4 @@ requests = "*"
 [dev-packages]
 pylint = "*"
 pytest = "*"
+pyperclip = "*"
