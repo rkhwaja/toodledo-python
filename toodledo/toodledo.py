@@ -83,6 +83,27 @@ class _ToodledoPriority(fields.Field):
 		assert False, "Bad incoming integer for priority enum"
 		return None
 
+class DueDateModifier(Enum):
+	"""Enum for all the due date modifiers"""
+	DUE_BY = 0
+	DUE_ON = 1
+	DUE_AFTER = 2
+	OPTIONALLY = 3
+
+class _ToodledoDueDateModifier(fields.Field):
+	def _serialize(self, value, attr, obj):
+		assert isinstance(value, DueDateModifier)
+		return value.value
+
+	def _deserialize(self, value, attr, data):
+		assert isinstance(value, int)
+		assert 0 <= value <= 3
+		for enumValue in DueDateModifier:
+			if enumValue.value == value:
+				return enumValue
+		assert False, "Bad incoming integer for due date modifier enum"
+		return None
+
 class Task:
 	"""Represents a single task"""
 
@@ -140,6 +161,7 @@ class _TaskSchema(Schema):
 	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
 	star = _ToodledoBoolean()
 	priority = _ToodledoPriority()
+	dueDateModifier = _ToodledoDueDateModifier()
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use

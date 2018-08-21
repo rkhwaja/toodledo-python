@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from pytest import fixture
 
-from toodledo import Priority, Task
+from toodledo import DueDateModifier, Priority, Task
 
 @fixture
 def toodledo():
@@ -58,6 +58,13 @@ def test_set_priority(toodledo):
 	toodledo.DeleteTasks([task])
 
 	task = CreateATask(toodledo, Task(priority=Priority.NEGATIVE))
+	toodledo.DeleteTasks([task])
+
+def test_set_due_date_modifier(toodledo):
+	task = CreateATask(toodledo, Task(dueDateModifier=DueDateModifier.DUE_AFTER))
+	toodledo.DeleteTasks([task])
+
+	task = CreateATask(toodledo, Task(dueDateModifier=DueDateModifier.DUE_ON))
 	toodledo.DeleteTasks([task])
 
 def test_write_then_read(toodledo):
