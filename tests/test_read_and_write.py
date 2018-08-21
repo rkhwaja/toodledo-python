@@ -42,3 +42,34 @@ def test_write_then_read(toodledo):
 	tasks = toodledo.GetTasks(params={})
 	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
 	assert len(ourTasks) == 0
+
+def test_extra_fields(toodledo):
+	randomTitle = str(uuid4())
+	splitTime = datetime.now()
+	toodledo.AddTasks([Task(title=randomTitle)])
+	tasks = toodledo.GetTasks(params={"fields": "tag,duedate,startdate"})
+	assert isinstance(tasks, list)
+	assert len(tasks) >= 1
+
+	# find our tasks - toodledo times don't have fractional seconds so we might have to go back 1 second
+	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	assert len(ourTasks) == 1
+	task = ourTasks[0]
+
+	assert hasattr(task, "title")
+	assert hasattr(task, "id_")
+	assert hasattr(task, "modified")
+	assert hasattr(task, "completedDate")
+	assert hasattr(task, "startDate")
+	assert hasattr(task, "dueDate")
+	assert hasattr(task, "tags")
+
+	assert task.title == randomTitle
+
+	# clean up
+	toodledo.DeleteTasks([task])
+
+	# find our tasks again
+	tasks = toodledo.GetTasks(params={})
+	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	assert len(ourTasks) == 0
