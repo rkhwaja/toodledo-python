@@ -16,7 +16,7 @@ def CreateATask(toodledo, task):
 	task.title = str(uuid4())
 	splitTime = datetime.now()
 	toodledo.AddTasks([task])
-	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag"})
+	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star"})
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
@@ -47,6 +47,10 @@ def test_set_tags(toodledo):
 	toodledo.DeleteTasks([task])
 
 	task = CreateATask(toodledo, Task(tags=["z", "a", "b", "c"]))
+	toodledo.DeleteTasks([task])
+
+def test_set_star(toodledo):
+	task = CreateATask(toodledo, Task(star=True))
 	toodledo.DeleteTasks([task])
 
 def test_write_then_read(toodledo):

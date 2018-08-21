@@ -51,6 +51,15 @@ class _ToodledoTags(fields.Field):
 			return []
 		return [x.strip() for x in value.split(",")]
 
+class _ToodledoBoolean(fields.Field):
+	def _serialize(self, value, attr, obj):
+		assert isinstance(value, bool)
+		return 0 if value is False else 1
+
+	def _deserialize(self, value, attr, data):
+		assert isinstance(value, int)
+		return (value == 1)
+
 class Task:
 	"""Represents a single task"""
 
@@ -106,6 +115,7 @@ class _TaskSchema(Schema):
 	dueDate = _ToodledoDate(dump_to="duedate", load_from="duedate")
 	modified = _ToodledoDatetime()
 	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
+	star = _ToodledoBoolean()
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use
