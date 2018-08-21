@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from os import environ
 from uuid import uuid4
 
@@ -11,6 +11,43 @@ def toodledo():
 	from toodledo import TokenStorageFile, Toodledo
 	tokenStorage = TokenStorageFile(environ["TOODLEDO_TOKEN_STORAGE"])
 	return Toodledo(clientId=environ["TOODLEDO_CLIENT_ID"], clientSecret=environ["TOODLEDO_CLIENT_SECRET"], tokenStorage=tokenStorage, scope="basic tasks notes folders write")
+
+def CreateATask(toodledo, task):
+	task.title = str(uuid4())
+	splitTime = datetime.now()
+	toodledo.AddTasks([task])
+	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag"})
+	assert isinstance(tasks, list)
+	assert len(tasks) >= 1
+
+	# find our tasks - toodledo times don't have fractional seconds so we might have to go back 1 second
+	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	assert len(ourTasks) == 1
+	returnedTask = ourTasks[0]
+	print(returnedTask)
+
+	assert task.title == returnedTask.title
+	assert hasattr(task, "completedDate") is False or task.completedDate is None
+	assert hasattr(task, "startDate") is False or task.startDate == returnedTask.startDate
+	assert hasattr(task, "dueDate") is False or task.dueDate == returnedTask.dueDate
+	assert hasattr(task, "tags") is False or set(task.tags) == set(returnedTask.tags)
+
+	return returnedTask
+
+def test_set_start_date(toodledo):
+	task = CreateATask(toodledo, Task(startDate=date.today()))
+	toodledo.DeleteTasks([task])
+
+def test_set_due_date(toodledo):
+	task = CreateATask(toodledo, Task(dueDate=date.today()))
+	toodledo.DeleteTasks([task])
+
+def test_set_tags(toodledo):
+	task = CreateATask(toodledo, Task(tags=["a", "b", "c"]))
+	toodledo.DeleteTasks([task])
+
+	task = CreateATask(toodledo, Task(tags=["z", "a", "b", "c"]))
+	toodledo.DeleteTasks([task])
 
 def test_write_then_read(toodledo):
 	randomTitle = str(uuid4())
