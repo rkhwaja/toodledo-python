@@ -1,6 +1,7 @@
 """Implementation"""
 
 from datetime import date, datetime
+from enum import Enum
 from functools import partial
 from json import dump, dumps, load
 from logging import debug, error
@@ -60,6 +61,29 @@ class _ToodledoBoolean(fields.Field):
 		assert isinstance(value, int)
 		return value == 1
 
+class Priority(Enum):
+	"""Priority as an enum with the correct Toodledo integer equivalents"""
+	NEGATIVE = -1
+	LOW = 0
+	MEDIUM = 1
+	HIGH = 2
+	TOP = 3
+
+class _ToodledoPriority(fields.Field):
+	def _serialize(self, value, attr, obj):
+		assert isinstance(value, Priority)
+		return value.value
+
+	def _deserialize(self, value, attr, data):
+		assert isinstance(value, int)
+		assert -1 <= value <= 3
+		for enumValue in Priority:
+			if enumValue.value == value:
+				return enumValue
+		assert False, "Bad incoming integer for priority enum"
+		return None
+
+
 class Task:
 	"""Represents a single task"""
 
@@ -116,6 +140,7 @@ class _TaskSchema(Schema):
 	modified = _ToodledoDatetime()
 	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
 	star = _ToodledoBoolean()
+	priority = _ToodledoPriority()
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use
