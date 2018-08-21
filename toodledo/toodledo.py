@@ -58,7 +58,7 @@ class _ToodledoBoolean(fields.Field):
 
 	def _deserialize(self, value, attr, data):
 		assert isinstance(value, int)
-		return (value == 1)
+		return value == 1
 
 class Task:
 	"""Represents a single task"""

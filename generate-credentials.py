@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+"""Generate credentials for tests"""
+
 from os import environ
 
 from toodledo import TokenStorageFile, Toodledo

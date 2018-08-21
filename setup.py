@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Pretty standard setup.py"""
+
 from setuptools import find_packages, setup
 
 with open("README.rst") as f:
