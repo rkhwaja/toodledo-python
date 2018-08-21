@@ -83,7 +83,6 @@ class _ToodledoPriority(fields.Field):
 		assert False, "Bad incoming integer for priority enum"
 		return None
 
-
 class Task:
 	"""Represents a single task"""
 

@@ -8,7 +8,7 @@ with open("README.rst") as f:
 	long_description = f.read()
 
 setup(name="toodledo",
-	version="0.5",
+	version="0.6",
 	description="Python wrapper for the Toodledo v3 API which is documented at http://api.toodledo.com/3/",
 	long_description=long_description,
 	author="Rehan Khwaja",
