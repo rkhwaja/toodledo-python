@@ -12,3 +12,4 @@ install:
 script:
 - pylint toodledo
 - pytest -k test_get_account
+- pytest -k test_get_tasks
