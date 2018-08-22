@@ -20,8 +20,8 @@ def CreateATask(toodledo, task):
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
-	# find our tasks - toodledo times don't have fractional seconds so we might have to go back 1 second
-	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	# find our tasks
+	ourTasks = [t for t in tasks if t.title == task.title]
 	assert len(ourTasks) == 1
 	returnedTask = ourTasks[0]
 	print(returnedTask)
@@ -79,8 +79,8 @@ def test_write_then_read(toodledo):
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
-	# find our tasks - toodledo times don't have fractional seconds so we might have to go back 1 second
-	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	# find our tasks
+	ourTasks = [t for t in tasks if t.title == randomTitle]
 	assert len(ourTasks) == 1
 	task = ourTasks[0]
 
@@ -99,7 +99,7 @@ def test_write_then_read(toodledo):
 
 	# find our tasks again
 	tasks = toodledo.GetTasks(params={})
-	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	ourTasks = [t for t in tasks if t.title == randomTitle]
 	assert len(ourTasks) == 0
 
 def test_extra_fields(toodledo):
@@ -110,8 +110,8 @@ def test_extra_fields(toodledo):
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
-	# find our tasks - toodledo times don't have fractional seconds so we might have to go back 1 second
-	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	# find our tasks
+	ourTasks = [t for t in tasks if t.title == randomTitle]
 	assert len(ourTasks) == 1
 	task = ourTasks[0]
 
@@ -130,5 +130,5 @@ def test_extra_fields(toodledo):
 
 	# find our tasks again
 	tasks = toodledo.GetTasks(params={})
-	ourTasks = [task for task in tasks if task.modified >= splitTime - timedelta(seconds=1)]
+	ourTasks = [t for t in tasks if t.title == randomTitle]
 	assert len(ourTasks) == 0
