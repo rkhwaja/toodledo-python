@@ -1,6 +1,6 @@
 """Implementation"""
 
-from datetime import date, datetime
+from datetime import date, datetime, time
 from enum import Enum
 from functools import partial
 from json import dump, dumps, load
@@ -40,6 +40,27 @@ class _ToodledoDatetime(fields.Field):
 		if value == 0:
 			return None
 		return datetime.fromtimestamp(float(value))
+
+# stats for this field are:
+# date component is set to 1/1/1970 in the case where there's no corresponding date set
+# date component is set to the corresponding (due/start) date when there is a corresponding date set
+# the times are floating times i.e. naive datetimes in python
+# unset, represented in the API as 0
+class _ToodledoFloatingDateTime(fields.Field):
+	def _serialize(self, value, attr, obj):
+		if value is None:
+			return 0
+		assert isinstance(value, time)
+		blankDate = date(1970, 1, 1)
+		# TODO - this is assuming that there's no date, how to deal with the case when there's a date?
+		return datetime(blankDate.year, blankDate.month, blankDate.day, time.hour, time.minute, time.second).timestamp()
+
+	def _deserialize(self, value, attr, data):
+		if value == 0:
+			return None
+		assert isinstance(value, int)
+		# will return a datetime with a possible 1/1/1970 in the date part
+		return datetime.fromtimestamp(float(value)).time()
 
 class _ToodledoTags(fields.Field):
 	def _serialize(self, value, attr, obj):
@@ -162,6 +183,8 @@ class _TaskSchema(Schema):
 	star = _ToodledoBoolean()
 	priority = _ToodledoPriority()
 	dueDateModifier = _ToodledoDueDateModifier(dump_to="duedatemod", load_from="duedatemod")
+	startTime = _ToodledoFloatingDateTime(dump_to="starttime", load_from="starttime")
+	dueTime = _ToodledoFloatingDateTime(dump_to="duetime", load_from="duetime")
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use
