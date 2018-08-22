@@ -370,7 +370,7 @@ class Toodledo:
 
 	def GetAccount(self):
 		"""Get the Toodledo account"""
-		self._ReauthorizeIfNecessary(partial(GetAccount))
+		return self._ReauthorizeIfNecessary(partial(GetAccount))
 
 	def GetTasks(self, params):
 		"""Get the tasks filtered by the given params"""
