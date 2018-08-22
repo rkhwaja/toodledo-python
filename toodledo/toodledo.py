@@ -233,7 +233,7 @@ def GetTasks(session, params):
 			raise ToodledoError(tasks["errorCode"])
 		# the first field contains the count or the error code
 		allTasks.extend(tasks[1:])
-		debug("Retrieved {} tasks".format(len(tasks[1:])))
+		debug("Retrieved {:,} tasks".format(len(tasks[1:])))
 		if len(tasks[1:]) < limit:
 			break
 		start += limit
