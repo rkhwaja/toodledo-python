@@ -52,15 +52,6 @@ class _ToodledoTags(fields.Field):
 			return []
 		return [x.strip() for x in value.split(",")]
 
-class _ToodledoBoolean(fields.Field):
-	def _serialize(self, value, attr, obj):
-		assert isinstance(value, bool)
-		return 0 if value is False else 1
-
-	def _deserialize(self, value, attr, data):
-		assert isinstance(value, int)
-		return value == 1
-
 class Priority(Enum):
 	"""Priority as an enum with the correct Toodledo integer equivalents"""
 	NEGATIVE = -1
@@ -159,7 +150,7 @@ class _TaskSchema(Schema):
 	dueDate = _ToodledoDate(dump_to="duedate", load_from="duedate")
 	modified = _ToodledoDatetime()
 	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
-	star = _ToodledoBoolean()
+	star = fields.Boolean(truthy=1, falsy=0)
 	priority = _ToodledoPriority()
 	dueDateModifier = _ToodledoDueDateModifier(dump_to="duedatemod", load_from="duedatemod")
 

@@ -57,6 +57,11 @@ def test_set_star(toodledo):
 	task = CreateATask(toodledo, Task(star=False))
 	toodledo.DeleteTasks([task])
 
+def test_existing_star(toodledo):
+	tasks = toodledo.GetTasks(params={"fields": "star"})
+	ourTask = [t for t in tasks if t.title == "Test task with star"][0]
+	assert ourTask.star is True
+
 def test_set_priority(toodledo):
 	task = CreateATask(toodledo, Task(priority=Priority.HIGH))
 	toodledo.DeleteTasks([task])
