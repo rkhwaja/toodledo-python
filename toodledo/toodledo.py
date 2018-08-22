@@ -96,6 +96,7 @@ class _ToodledoDueDateModifier(fields.Field):
 		return None
 
 class Status(Enum):
+	"""Enum for all the possible statuses"""
 	NONE = 0
 	NEXT_ACTION = 1
 	ACTIVE = 2
@@ -181,6 +182,7 @@ class _TaskSchema(Schema):
 	priority = _ToodledoPriority()
 	dueDateModifier = _ToodledoDueDateModifier(dump_to="duedatemod", load_from="duedatemod")
 	status = _ToodledoStatus()
+	length = fields.Integer()
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use

@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from pytest import fixture
 
-from toodledo import DueDateModifier, Priority, Task, Status
+from toodledo import DueDateModifier, Priority, Status, Task
 
 @fixture
 def toodledo():
@@ -16,7 +16,7 @@ def CreateATask(toodledo, task):
 	task.title = str(uuid4())
 	splitTime = datetime.now()
 	toodledo.AddTasks([task])
-	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status"})
+	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status,length"})
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
@@ -35,6 +35,7 @@ def CreateATask(toodledo, task):
 	assert hasattr(task, "priority") is False or task.priority == returnedTask.priority
 	assert hasattr(task, "dueDateModifier") is False or task.dueDateModifier == returnedTask.dueDateModifier
 	assert hasattr(task, "status") is False or task.status == returnedTask.status
+	assert hasattr(task, "length") is False or task.length == returnedTask.length
 
 	return returnedTask
 
@@ -73,6 +74,10 @@ def test_set_status(toodledo):
 	toodledo.DeleteTasks([task])
 
 	task = CreateATask(toodledo, Task(status=Status.WAITING))
+	toodledo.DeleteTasks([task])
+
+def test_set_length(toodledo):
+	task = CreateATask(toodledo, Task(length=42))
 	toodledo.DeleteTasks([task])
 
 def test_set_priority(toodledo):
