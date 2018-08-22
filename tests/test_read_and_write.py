@@ -16,7 +16,7 @@ def CreateATask(toodledo, task):
 	task.title = str(uuid4())
 	splitTime = datetime.now()
 	toodledo.AddTasks([task])
-	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority"})
+	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod"})
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
@@ -31,6 +31,7 @@ def CreateATask(toodledo, task):
 	assert hasattr(task, "startDate") is False or task.startDate == returnedTask.startDate
 	assert hasattr(task, "dueDate") is False or task.dueDate == returnedTask.dueDate
 	assert hasattr(task, "tags") is False or set(task.tags) == set(returnedTask.tags)
+	assert hasattr(task, "dueDateModifier") is False or task.dueDateModifier == returnedTask.dueDateModifier
 
 	return returnedTask
 
@@ -53,6 +54,9 @@ def test_set_star(toodledo):
 	task = CreateATask(toodledo, Task(star=True))
 	toodledo.DeleteTasks([task])
 
+	task = CreateATask(toodledo, Task(star=False))
+	toodledo.DeleteTasks([task])
+
 def test_set_priority(toodledo):
 	task = CreateATask(toodledo, Task(priority=Priority.HIGH))
 	toodledo.DeleteTasks([task])
@@ -61,10 +65,10 @@ def test_set_priority(toodledo):
 	toodledo.DeleteTasks([task])
 
 def test_set_due_date_modifier(toodledo):
-	task = CreateATask(toodledo, Task(dueDateModifier=DueDateModifier.DUE_AFTER))
+	task = CreateATask(toodledo, Task(dueDate=date.today(), dueDateModifier=DueDateModifier.DUE_AFTER))
 	toodledo.DeleteTasks([task])
 
-	task = CreateATask(toodledo, Task(dueDateModifier=DueDateModifier.DUE_ON))
+	task = CreateATask(toodledo, Task(dueDate=date.today(), dueDateModifier=DueDateModifier.DUE_ON))
 	toodledo.DeleteTasks([task])
 
 def test_write_then_read(toodledo):

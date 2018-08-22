@@ -161,7 +161,7 @@ class _TaskSchema(Schema):
 	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
 	star = _ToodledoBoolean()
 	priority = _ToodledoPriority()
-	dueDateModifier = _ToodledoDueDateModifier()
+	dueDateModifier = _ToodledoDueDateModifier(dump_to="duedatemod", load_from="duedatemod")
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use
