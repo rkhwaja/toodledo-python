@@ -8,5 +8,7 @@ sudo: true
 install:
 - pip install marshmallow requests-oauthlib requests
 - pip install --pre pylint astroid
+- pip install pytest
 script:
 - pylint toodledo
+- pytest -k test_get_account
