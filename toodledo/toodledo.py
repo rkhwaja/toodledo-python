@@ -183,6 +183,7 @@ class _TaskSchema(Schema):
 	dueDateModifier = _ToodledoDueDateModifier(dump_to="duedatemod", load_from="duedatemod")
 	status = _ToodledoStatus()
 	length = fields.Integer()
+	note = fields.String()
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use

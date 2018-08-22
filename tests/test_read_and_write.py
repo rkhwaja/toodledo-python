@@ -16,7 +16,7 @@ def CreateATask(toodledo, task):
 	task.title = str(uuid4())
 	splitTime = datetime.now()
 	toodledo.AddTasks([task])
-	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status,length"})
+	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status,length,note"})
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
@@ -36,6 +36,7 @@ def CreateATask(toodledo, task):
 	assert hasattr(task, "dueDateModifier") is False or task.dueDateModifier == returnedTask.dueDateModifier
 	assert hasattr(task, "status") is False or task.status == returnedTask.status
 	assert hasattr(task, "length") is False or task.length == returnedTask.length
+	assert hasattr(task, "note") is False or task.note == returnedTask.note
 
 	return returnedTask
 
@@ -78,6 +79,10 @@ def test_set_status(toodledo):
 
 def test_set_length(toodledo):
 	task = CreateATask(toodledo, Task(length=42))
+	toodledo.DeleteTasks([task])
+
+def test_set_note(toodledo):
+	task = CreateATask(toodledo, Task(note="This is a note"))
 	toodledo.DeleteTasks([task])
 
 def test_set_priority(toodledo):
