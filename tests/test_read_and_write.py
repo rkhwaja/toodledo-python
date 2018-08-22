@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from pytest import fixture
 
-from toodledo import DueDateModifier, Priority, Task
+from toodledo import DueDateModifier, Priority, Task, Status
 
 @fixture
 def toodledo():
@@ -16,7 +16,7 @@ def CreateATask(toodledo, task):
 	task.title = str(uuid4())
 	splitTime = datetime.now()
 	toodledo.AddTasks([task])
-	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod"})
+	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status"})
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
@@ -31,7 +31,10 @@ def CreateATask(toodledo, task):
 	assert hasattr(task, "startDate") is False or task.startDate == returnedTask.startDate
 	assert hasattr(task, "dueDate") is False or task.dueDate == returnedTask.dueDate
 	assert hasattr(task, "tags") is False or set(task.tags) == set(returnedTask.tags)
+	assert hasattr(task, "star") is False or task.star == returnedTask.star
+	assert hasattr(task, "priority") is False or task.priority == returnedTask.priority
 	assert hasattr(task, "dueDateModifier") is False or task.dueDateModifier == returnedTask.dueDateModifier
+	assert hasattr(task, "status") is False or task.status == returnedTask.status
 
 	return returnedTask
 
@@ -61,6 +64,16 @@ def test_existing_star(toodledo):
 	tasks = toodledo.GetTasks(params={"fields": "star"})
 	ourTask = [t for t in tasks if t.title == "Test task with star"][0]
 	assert ourTask.star is True
+
+def test_set_status(toodledo):
+	task = CreateATask(toodledo, Task(status=Status.NEXT_ACTION))
+	toodledo.DeleteTasks([task])
+
+	task = CreateATask(toodledo, Task(status=Status.NONE))
+	toodledo.DeleteTasks([task])
+
+	task = CreateATask(toodledo, Task(status=Status.WAITING))
+	toodledo.DeleteTasks([task])
 
 def test_set_priority(toodledo):
 	task = CreateATask(toodledo, Task(priority=Priority.HIGH))
