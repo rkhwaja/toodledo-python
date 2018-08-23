@@ -1,20 +1,10 @@
-from datetime import date, datetime
-from os import environ
+from datetime import date
 from uuid import uuid4
-
-from pytest import fixture
 
 from toodledo import DueDateModifier, Priority, Status, Task
 
-@fixture
-def toodledo():
-	from toodledo import TokenStorageFile, Toodledo
-	tokenStorage = TokenStorageFile(environ["TOODLEDO_TOKEN_STORAGE"])
-	return Toodledo(clientId=environ["TOODLEDO_CLIENT_ID"], clientSecret=environ["TOODLEDO_CLIENT_SECRET"], tokenStorage=tokenStorage, scope="basic tasks notes folders write")
-
 def CreateATask(toodledo, task):
 	task.title = str(uuid4())
-	splitTime = datetime.now()
 	toodledo.AddTasks([task])
 	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status,length,note"})
 	assert isinstance(tasks, list)
@@ -101,7 +91,6 @@ def test_set_due_date_modifier(toodledo):
 
 def test_write_then_read(toodledo):
 	randomTitle = str(uuid4())
-	splitTime = datetime.now()
 	toodledo.AddTasks([Task(title=randomTitle)])
 	tasks = toodledo.GetTasks(params={})
 	assert isinstance(tasks, list)
@@ -132,7 +121,6 @@ def test_write_then_read(toodledo):
 
 def test_extra_fields(toodledo):
 	randomTitle = str(uuid4())
-	splitTime = datetime.now()
 	toodledo.AddTasks([Task(title=randomTitle)])
 	tasks = toodledo.GetTasks(params={"fields": "tag,duedate,startdate"})
 	assert isinstance(tasks, list)

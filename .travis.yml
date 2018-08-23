@@ -11,5 +11,6 @@ install:
 - pip install pytest
 script:
 - pylint toodledo
+- pylint tests --disable=missing-docstring
 - pytest -k test_get_account
 - pytest -k test_get_tasks

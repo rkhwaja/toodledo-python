@@ -1,19 +1,6 @@
-from os import environ
 from uuid import uuid4
 
-from pytest import fixture
-
 from toodledo import Folder
-
-@fixture
-def toodledo():
-	from toodledo import TokenStorageFile, Toodledo
-	if "TOODLEDO_TOKEN_STORAGE" in environ:
-		tokenStorage = TokenStorageFile(environ["TOODLEDO_TOKEN_STORAGE"])
-	else:
-		# for travis
-		tokenStorage = TokenReadOnly("TOODLEDO_TOKEN_READONLY")
-	return Toodledo(clientId=environ["TOODLEDO_CLIENT_ID"], clientSecret=environ["TOODLEDO_CLIENT_SECRET"], tokenStorage=tokenStorage, scope="basic tasks notes folders write")
 
 # There's no export for these in the toodledo web interface so the user will have to make them themselves
 def test_get_known_folders(toodledo):
@@ -22,25 +9,25 @@ def test_get_known_folders(toodledo):
 	assert len(folders) == 3
 	folder = folders[0]
 	assert folder.name == "Test Folder"
-	assert folder.archived == False
+	assert folder.archived is False
 	assert folder.order == 1
-	assert folder.private == False
+	assert folder.private is False
 
 	assert folders[1].name == "Test Folder - archived"
-	assert folders[1].archived == True
-	assert folders[1].private == False
+	assert folders[1].archived is True
+	assert folders[1].private is False
 
 	assert folders[2].name == "Test Folder - private"
-	assert folders[2].archived == False
-	assert folders[2].private == True
+	assert folders[2].archived is False
+	assert folders[2].private is True
 
 def test_add_edit_delete_folder(toodledo):
 	randomName = str(uuid4())
 	newFolder = toodledo.AddFolder(Folder(name=randomName, private=False))
 	assert isinstance(newFolder, Folder)
 	assert newFolder.name == randomName
-	assert newFolder.private == False
-	assert newFolder.archived == False
+	assert newFolder.private is False
+	assert newFolder.archived is False
 
 	newFolder.name = str(uuid4())
 	newFolder.private = True
