@@ -3,4 +3,4 @@ indent-string=\t
 max-line-length=200
 
 [MESSAGES CONTROL]
-disable=bad-continuation, fixme, invalid-name, len-as-condition
+disable=bad-continuation, duplicate-code, fixme, invalid-name, len-as-condition

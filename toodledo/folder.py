@@ -11,7 +11,7 @@ class Folder: # pylint: disable=too-few-public-methods
 
 	def __repr__(self):
 		attributes = sorted(["{}={}".format(name, item) for name, item in self.__dict__.items()])
-		return "<_Folder {}>".format(", ".join(attributes))
+		return "<Folder {}>".format(", ".join(attributes))
 
 class _FolderSchema(Schema):
 	id_ = fields.Integer(dump_to="id", load_from="id")
