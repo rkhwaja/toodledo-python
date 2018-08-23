@@ -31,7 +31,7 @@ def test_get_known_folders(toodledo):
 	assert folders[1].private == False
 
 	assert folders[2].name == "Test Folder - private"
-	assert folders[1].archived == False
+	assert folders[2].archived == False
 	assert folders[2].private == True
 
 def test_add_edit_delete_folder(toodledo):
