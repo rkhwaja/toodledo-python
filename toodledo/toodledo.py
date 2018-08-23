@@ -123,6 +123,28 @@ class _ToodledoStatus(fields.Field):
 		assert False, "Bad incoming integer for status enum"
 		return None
 
+# Can't use the standard marshmallow boolean because it serializes to True/False rather than 1/0
+class _ToodledoBoolean(fields.Field):
+	def _serialize(self, value, attr, obj):
+		assert isinstance(value, bool)
+		return 1 if value else 0
+
+	def _deserialize(self, value, attr, data):
+		assert isinstance(value, int)
+		assert 0 <= value <= 1
+		return value == 1
+
+class _ToodledoListId(fields.Field):
+	def _serialize(self, value, attr, obj):
+		assert value is None or isinstance(value, int)
+		return value if value is not None else 0
+
+	def _deserialize(self, value, attr, data):
+		assert isinstance(value, int)
+		if value == 0:
+			return None
+		return value
+
 class Task:
 	"""Represents a single task"""
 
@@ -148,6 +170,12 @@ class ToodledoError(Exception):
 		101: "SSL connection is required",
 		102: "There was an error requesting a token",
 		103: "Too many token requests",
+		201: "Your folder must have a name.",
+		202: "A folder with that name already exists.",
+		203: "Max folders reached (1000).",
+		204: "Empty id.",
+		205: "Invalid folder.",
+		206: "Nothing was edited.",
 		601: "Your task must have a title.",
 		602: "Only 50 tasks can be added/edited/deleted at a time.",
 		603: "The maximum number of tasks allowed per account (20000) has been reached",
@@ -178,12 +206,13 @@ class _TaskSchema(Schema):
 	dueDate = _ToodledoDate(dump_to="duedate", load_from="duedate")
 	modified = _ToodledoDatetime()
 	completedDate = _ToodledoDate(dump_to="completed", load_from="completed")
-	star = fields.Boolean(truthy=1, falsy=0)
+	star = _ToodledoBoolean()
 	priority = _ToodledoPriority()
 	dueDateModifier = _ToodledoDueDateModifier(dump_to="duedatemod", load_from="duedatemod")
 	status = _ToodledoStatus()
 	length = fields.Integer()
 	note = fields.String()
+	folderId = _ToodledoListId(dump_to="folder", load_from="folder")
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use
@@ -204,6 +233,27 @@ class _AccountSchema(Schema):
 	@post_load
 	def _MakeAccount(self, data): # pylint: disable=no-self-use
 		return _Account(data["lastEditTask"], data["lastDeleteTask"])
+
+class Folder: # pylint: disable=too-few-public-methods
+	"""Toodledo folder"""
+	def __init__(self, **data):
+		for name, item in data.items():
+			setattr(self, name, item)
+
+	def __repr__(self):
+		attributes = sorted(["{}={}".format(name, item) for name, item in self.__dict__.items()])
+		return "<_Folder {}>".format(", ".join(attributes))
+
+class _FolderSchema(Schema):
+	id_ = fields.Integer(dump_to="id", load_from="id")
+	name = fields.String()
+	private = _ToodledoBoolean()
+	archived = _ToodledoBoolean()
+	order = fields.Integer(dump_to="ord", load_from="ord")
+
+	@post_load
+	def _MakeFolder(self, data): # pylint: disable=no-self-use
+		return Folder(**data)
 
 def _DumpTaskList(taskList):
 	# TODO - pass many=True to the schema instead of this custom stuff
@@ -321,6 +371,10 @@ class Toodledo:
 	deleteTasksUrl = "https://api.toodledo.com/3/tasks/delete.php"
 	addTasksUrl = "https://api.toodledo.com/3/tasks/add.php"
 	editTasksUrl = "https://api.toodledo.com/3/tasks/edit.php"
+	getFoldersUrl = "https://api.toodledo.com/3/folders/get.php"
+	addFolderUrl = "https://api.toodledo.com/3/folders/add.php"
+	deleteFolderUrl = "https://api.toodledo.com/3/folders/delete.php"
+	editFolderUrl = "https://api.toodledo.com/3/folders/edit.php"
 
 	def __init__(self, clientId, clientSecret, tokenStorage, scope):
 		self.tokenStorage = tokenStorage
@@ -367,6 +421,44 @@ class Toodledo:
 			# this can happen if the refresh token has expired
 			self.session = self._Authorize()
 			return func(self.session)
+
+	def GetFolders(self):
+		"""Get all the folders as folder objects"""
+		folders = self.session.get(Toodledo.getFoldersUrl)
+		folders.raise_for_status()
+		schema = _FolderSchema()
+		return [schema.load(x).data for x in folders.json()]
+
+	def AddFolder(self, folder):
+		"""Add folder, return the created folder"""
+		response = self.session.post(Toodledo.addFolderUrl, params={"name": folder.name, "private": 1 if folder.private else 0})
+		response.raise_for_status()
+		if "errorCode" in response.json():
+			error("Toodledo error: {}".format(response.json()))
+			raise ToodledoError(response.json()["errorCode"])
+		return _FolderSchema().load(response.json()[0]).data
+
+	def DeleteFolder(self, folder):
+		"""Delete folder"""
+		response = self.session.post(Toodledo.deleteFolderUrl, params={"id": folder.id_})
+		response.raise_for_status()
+		jsonResponse = response.json()
+		if "errorCode" in jsonResponse:
+			error("Toodledo error: {}".format(jsonResponse))
+			raise ToodledoError(jsonResponse["errorCode"])
+		assert jsonResponse == {"deleted": folder.id_}, dumps(jsonResponse)
+
+	def EditFolder(self, folder):
+		"""Edits the given folder to have the given properties"""
+		folderData = _FolderSchema().dump(folder).data
+		print(folderData)
+		response = self.session.post(Toodledo.editFolderUrl, params=folderData)
+		response.raise_for_status()
+		responseAsDict = response.json()
+		if "errorCode" in responseAsDict:
+			error("Toodledo error: {}".format(responseAsDict))
+			raise ToodledoError(responseAsDict["errorCode"])
+		return _FolderSchema().load(responseAsDict[0]).data
 
 	def GetAccount(self):
 		"""Get the Toodledo account"""

@@ -104,6 +104,31 @@
 <note></note>
 </item>
 <item>
+<id>194594645</id>
+<parent>0</parent>
+<order>0</order>
+<title>Test task with private folder</title>
+<tag>known</tag>
+<folder>Test Folder - private</folder>
+<context></context>
+<goal></goal>
+<location></location>
+<startdate></startdate>
+<starttime></starttime>
+<duedate></duedate>
+<duedatemodifier>0</duedatemodifier>
+<duetime></duetime>
+<completed>0000-00-00</completed>
+<repeat>None</repeat>
+<repeatfrom>0</repeatfrom>
+<priority>Low</priority>
+<length></length>
+<timer>0</timer>
+<status>None</status>
+<star>0</star>
+<note></note>
+</item>
+<item>
 <id>194507357</id>
 <parent>0</parent>
 <order>0</order>
@@ -126,6 +151,31 @@
 <timer>0</timer>
 <status>None</status>
 <star>1</star>
+<note></note>
+</item>
+<item>
+<id>194594695</id>
+<parent>0</parent>
+<order>0</order>
+<title>Test task with public folder</title>
+<tag>known</tag>
+<folder>Test Folder</folder>
+<context></context>
+<goal></goal>
+<location></location>
+<startdate></startdate>
+<starttime></starttime>
+<duedate></duedate>
+<duedatemodifier>0</duedatemodifier>
+<duetime></duetime>
+<completed>0000-00-00</completed>
+<repeat>None</repeat>
+<repeatfrom>0</repeatfrom>
+<priority>Low</priority>
+<length></length>
+<timer>0</timer>
+<status>None</status>
+<star>0</star>
 <note></note>
 </item>
 <item>
