@@ -35,6 +35,7 @@ class _TaskSchema(Schema):
 	length = fields.Integer()
 	note = fields.String()
 	folderId = _ToodledoListId(dump_to="folder", load_from="folder")
+	contextId = _ToodledoListId(dump_to="context", load_from="context")
 
 	@post_load
 	def _MakeTask(self, data): # pylint: disable=no-self-use

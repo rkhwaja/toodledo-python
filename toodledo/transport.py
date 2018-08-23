@@ -7,6 +7,7 @@ from logging import debug, error
 from requests_oauthlib import OAuth2Session
 
 from .account import _AccountSchema
+from .context import _ContextSchema
 from .errors import ToodledoError
 from .folder import _FolderSchema
 from .task import _DumpTaskList, _TaskSchema
@@ -107,6 +108,10 @@ class Toodledo:
 	addFolderUrl = "https://api.toodledo.com/3/folders/add.php"
 	deleteFolderUrl = "https://api.toodledo.com/3/folders/delete.php"
 	editFolderUrl = "https://api.toodledo.com/3/folders/edit.php"
+	getContextsUrl = "https://api.toodledo.com/3/contexts/get.php"
+	addContextUrl = "https://api.toodledo.com/3/contexts/add.php"
+	editContextUrl = "https://api.toodledo.com/3/contexts/edit.php"
+	deleteContextUrl = "https://api.toodledo.com/3/contexts/delete.php"
 
 	def __init__(self, clientId, clientSecret, tokenStorage, scope):
 		self.tokenStorage = tokenStorage
@@ -183,7 +188,6 @@ class Toodledo:
 	def EditFolder(self, folder):
 		"""Edits the given folder to have the given properties"""
 		folderData = _FolderSchema().dump(folder).data
-		print(folderData)
 		response = self.session.post(Toodledo.editFolderUrl, params=folderData)
 		response.raise_for_status()
 		responseAsDict = response.json()
@@ -191,6 +195,43 @@ class Toodledo:
 			error("Toodledo error: {}".format(responseAsDict))
 			raise ToodledoError(responseAsDict["errorCode"])
 		return _FolderSchema().load(responseAsDict[0]).data
+
+	def GetContexts(self):
+		"""Get all the contexts as context objects"""
+		contexts = self.session.get(Toodledo.getContextsUrl)
+		contexts.raise_for_status()
+		schema = _ContextSchema()
+		return [schema.load(x).data for x in contexts.json()]
+
+	def AddContext(self, context):
+		"""Add context, return the created context"""
+		response = self.session.post(Toodledo.addContextUrl, params={"name": context.name, "private": 1 if context.private else 0})
+		response.raise_for_status()
+		if "errorCode" in response.json():
+			error("Toodledo error: {}".format(response.json()))
+			raise ToodledoError(response.json()["errorCode"])
+		return _ContextSchema().load(response.json()[0]).data
+
+	def DeleteContext(self, context):
+		"""Delete context"""
+		response = self.session.post(Toodledo.deleteContextUrl, params={"id": context.id_})
+		response.raise_for_status()
+		jsonResponse = response.json()
+		if "errorCode" in jsonResponse:
+			error("Toodledo error: {}".format(jsonResponse))
+			raise ToodledoError(jsonResponse["errorCode"])
+		assert jsonResponse == {"deleted": context.id_}, dumps(jsonResponse)
+
+	def EditContext(self, context):
+		"""Edits the given folder to have the given properties"""
+		contextData = _ContextSchema().dump(context).data
+		response = self.session.post(Toodledo.editContextUrl, params=contextData)
+		response.raise_for_status()
+		responseAsDict = response.json()
+		if "errorCode" in responseAsDict:
+			error("Toodledo error: {}".format(responseAsDict))
+			raise ToodledoError(responseAsDict["errorCode"])
+		return _ContextSchema().load(responseAsDict[0]).data
 
 	def GetAccount(self):
 		"""Get the Toodledo account"""

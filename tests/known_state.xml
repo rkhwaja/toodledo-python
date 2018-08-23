@@ -204,6 +204,31 @@
 <note></note>
 </item>
 <item>
+<id>194622427</id>
+<parent>0</parent>
+<order>0</order>
+<title>Test task with public context</title>
+<tag>known</tag>
+<folder></folder>
+<context>Test Context - public</context>
+<goal></goal>
+<location></location>
+<startdate></startdate>
+<starttime></starttime>
+<duedate></duedate>
+<duedatemodifier>0</duedatemodifier>
+<duetime></duetime>
+<completed>0000-00-00</completed>
+<repeat>None</repeat>
+<repeatfrom>0</repeatfrom>
+<priority>Low</priority>
+<length></length>
+<timer>0</timer>
+<status>None</status>
+<star>0</star>
+<note></note>
+</item>
+<item>
 <id>194473969</id>
 <parent>0</parent>
 <order>0</order>
@@ -215,6 +240,31 @@
 <location></location>
 <startdate>2018-03-10</startdate>
 <starttime>3:00 pm</starttime>
+<duedate></duedate>
+<duedatemodifier>0</duedatemodifier>
+<duetime></duetime>
+<completed>0000-00-00</completed>
+<repeat>None</repeat>
+<repeatfrom>0</repeatfrom>
+<priority>Low</priority>
+<length></length>
+<timer>0</timer>
+<status>None</status>
+<star>0</star>
+<note></note>
+</item>
+<item>
+<id>194622453</id>
+<parent>0</parent>
+<order>0</order>
+<title>Test task with private context</title>
+<tag>known</tag>
+<folder></folder>
+<context>Test Context - private</context>
+<goal></goal>
+<location></location>
+<startdate></startdate>
+<starttime></starttime>
 <duedate></duedate>
 <duedatemodifier>0</duedatemodifier>
 <duetime></duetime>
