@@ -98,20 +98,21 @@ def DeleteTasks(session, taskList):
 
 class Toodledo:
 	"""Wrapper for the Toodledo v3 API"""
-	tokenUrl = "https://api.toodledo.com/3/account/token.php"
-	getAccountUrl = "https://api.toodledo.com/3/account/get.php"
-	getTasksUrl = "https://api.toodledo.com/3/tasks/get.php"
-	deleteTasksUrl = "https://api.toodledo.com/3/tasks/delete.php"
-	addTasksUrl = "https://api.toodledo.com/3/tasks/add.php"
-	editTasksUrl = "https://api.toodledo.com/3/tasks/edit.php"
-	getFoldersUrl = "https://api.toodledo.com/3/folders/get.php"
-	addFolderUrl = "https://api.toodledo.com/3/folders/add.php"
-	deleteFolderUrl = "https://api.toodledo.com/3/folders/delete.php"
-	editFolderUrl = "https://api.toodledo.com/3/folders/edit.php"
-	getContextsUrl = "https://api.toodledo.com/3/contexts/get.php"
-	addContextUrl = "https://api.toodledo.com/3/contexts/add.php"
-	editContextUrl = "https://api.toodledo.com/3/contexts/edit.php"
-	deleteContextUrl = "https://api.toodledo.com/3/contexts/delete.php"
+	baseUrl = "https://api.toodledo.com/3/"
+	tokenUrl = baseUrl + "account/token.php"
+	getAccountUrl = baseUrl + "account/get.php"
+	getTasksUrl = baseUrl + "tasks/get.php"
+	deleteTasksUrl = baseUrl + "tasks/delete.php"
+	addTasksUrl = baseUrl + "tasks/add.php"
+	editTasksUrl = baseUrl + "tasks/edit.php"
+	getFoldersUrl = baseUrl + "folders/get.php"
+	addFolderUrl = baseUrl + "folders/add.php"
+	deleteFolderUrl = baseUrl + "folders/delete.php"
+	editFolderUrl = baseUrl + "folders/edit.php"
+	getContextsUrl = baseUrl + "contexts/get.php"
+	addContextUrl = baseUrl + "contexts/add.php"
+	editContextUrl = baseUrl + "contexts/edit.php"
+	deleteContextUrl = baseUrl + "contexts/delete.php"
 
 	def __init__(self, clientId, clientSecret, tokenStorage, scope):
 		self.tokenStorage = tokenStorage
@@ -121,7 +122,7 @@ class Toodledo:
 		self.session = self.Session()
 
 	def _Authorize(self):
-		authorizationBaseUrl = "https://api.toodledo.com/3/account/authorize.php"
+		authorizationBaseUrl = Toodledo.baseUrl + "account/authorize.php"
 		session = OAuth2Session(client_id=self.clientId, scope=self.scope)
 		authorizationUrl, _ = session.authorization_url(authorizationBaseUrl)
 		print("Go to the following URL and authorize the app:" + authorizationUrl)
