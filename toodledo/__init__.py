@@ -4,5 +4,5 @@ from .context import Context
 from .folder import Folder
 from .storage import TokenStorageFile
 from .task import Task
-from .transport import AddTasks, DeleteTasks, EditTasks, GetAccount, GetTasks, Toodledo, ToodledoError
+from .transport import AuthorizationNeeded, Toodledo, ToodledoError
 from .types import DueDateModifier, Priority, Status

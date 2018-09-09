@@ -4,3 +4,5 @@ toodledo.egg-info/*
 .pytest_cache
 Pipfile.lock
 *.pyc
+.DS_Store
+.env
