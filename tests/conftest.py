@@ -3,6 +3,8 @@ from os import environ
 
 from pytest import fixture
 
+from toodledo import TokenStorageFile, Toodledo
+
 class TokenReadOnly:
 	"""Read the API tokens from an environment variable"""
 
@@ -19,7 +21,6 @@ class TokenReadOnly:
 
 @fixture
 def toodledo():
-	from toodledo import TokenStorageFile, Toodledo
 	if "TOODLEDO_TOKEN_STORAGE" in environ:
 		tokenStorage = TokenStorageFile(environ["TOODLEDO_TOKEN_STORAGE"])
 	else:

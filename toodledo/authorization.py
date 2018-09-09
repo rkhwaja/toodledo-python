@@ -1,6 +1,6 @@
 """Example authorization"""
 from requests_oauthlib import OAuth2Session
-from transport import Toodledo
+from .transport import Toodledo
 
 def CommandLineAuthorization(clientId, clientSecret, scope, tokenStorage):
 	"""Authorize in a command line program"""
