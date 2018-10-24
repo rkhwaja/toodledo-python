@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "toodledo"
+version = "0.10.0"
+description = "Python wrapper for the Toodledo v3 API which is documented at http://api.toodledo.com/3/"
+authors = ["Rehan Khwaja <rehan@khwaja.name>"]
+license = "MIT"
+readme = "README.rst"
+homepage = "https://github.com/rkhwaja/toodledo-python"
+classifiers = [
+	"Development Status :: 4 - Beta",
+	"License :: OSI Approved :: MIT License",
+	"Intended Audience :: Developers",
+	"Programming Language :: Python :: 3.5",
+	"Programming Language :: Python :: 3.6",
+	"Programming Language :: Python :: 3.7"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.5"
+marshmallow = "^2.16"
+requests-oauthlib = "^1.0"
+requests = "^2.20"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.1"
+pytest = "^3.9"
+pyperclip = "^1.7"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

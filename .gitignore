@@ -2,7 +2,10 @@ build/*
 dist/*
 toodledo.egg-info/*
 .pytest_cache
-Pipfile.lock
+poetry.lock
 *.pyc
 .DS_Store
 .env
+*.json
+.venv
+.style.yapf
