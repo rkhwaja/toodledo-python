@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "toodledo"
-version = "0.10.0"
+version = "1.0.0"
 description = "Python wrapper for the Toodledo v3 API which is documented at http://api.toodledo.com/3/"
 authors = ["Rehan Khwaja <rehan@khwaja.name>"]
 license = "MIT"
 readme = "README.rst"
 homepage = "https://github.com/rkhwaja/toodledo-python"
 classifiers = [
-	"Development Status :: 4 - Beta",
+	"Development Status :: 5 - Production/Stable",
 	"License :: OSI Approved :: MIT License",
 	"Intended Audience :: Developers",
 	"Programming Language :: Python :: 3.5",
