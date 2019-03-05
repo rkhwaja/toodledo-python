@@ -6,8 +6,10 @@ from os import environ
 
 from toodledo import CommandLineAuthorization, TokenStorageFile, Toodledo
 
-tokenStorage = TokenStorageFile(environ["TOODLEDO_TOKEN_STORAGE"])
+if __name__ == "__main__":
 
-app = Toodledo(clientId=environ["TOODLEDO_CLIENT_ID"], clientSecret=environ["TOODLEDO_CLIENT_SECRET"], tokenStorage=tokenStorage, scope="basic tasks notes folders write")
+	tokenStorage = TokenStorageFile(environ["TOODLEDO_TOKEN_STORAGE"])
 
-CommandLineAuthorization(environ["TOODLEDO_CLIENT_ID"], environ["TOODLEDO_CLIENT_SECRET"], "basic tasks notes folders write", tokenStorage)
+	app = Toodledo(clientId=environ["TOODLEDO_CLIENT_ID"], clientSecret=environ["TOODLEDO_CLIENT_SECRET"], tokenStorage=tokenStorage, scope="basic tasks notes folders write")
+
+	CommandLineAuthorization(environ["TOODLEDO_CLIENT_ID"], environ["TOODLEDO_CLIENT_SECRET"], "basic tasks notes folders write", tokenStorage)
