@@ -13,7 +13,6 @@ from .task import _DumpTaskList, _TaskSchema
 
 class AuthorizationNeeded(Exception):
 	"""Thrown when the token storage doesn't contain a token"""
-	pass
 
 class Toodledo:
 	"""Wrapper for the Toodledo v3 API"""
