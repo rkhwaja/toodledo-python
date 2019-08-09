@@ -34,6 +34,7 @@ class _TaskSchema(Schema):
 	status = _ToodledoStatus()
 	length = fields.Integer()
 	note = fields.String()
+	repeat = fields.String()
 	folderId = _ToodledoListId(dump_to="folder", load_from="folder")
 	contextId = _ToodledoListId(dump_to="context", load_from="context")
 
