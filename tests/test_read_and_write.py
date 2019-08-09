@@ -76,7 +76,7 @@ def test_set_note(toodledo):
 	task = CreateATask(toodledo, Task(note="This is a note"))
 	toodledo.DeleteTasks([task])
 
-def test_set_note(toodledo):
+def test_repeats(toodledo):
 	task = CreateATask(toodledo, Task(repeat="FREQ=YEARLY"))
 	toodledo.DeleteTasks([task])
 
