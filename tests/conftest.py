@@ -10,10 +10,11 @@ class TokenReadOnly:
 
 	def __init__(self, name):
 		self.name = name
+		self.token = self.Load()
 
-	def Save(self, _): # pylint: disable=no-self-use
+	def Save(self, token): # pylint: disable=no-self-use
 		"""Do nothing - this may cause a problem if the refresh token changes"""
-		return
+		self.token = token
 
 	def Load(self):
 		"""Load and return the token. Called by Toodledo class"""
