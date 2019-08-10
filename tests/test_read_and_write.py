@@ -6,7 +6,8 @@ from toodledo import DueDateModifier, Priority, Status, Task
 def CreateATask(toodledo, task):
 	task.title = str(uuid4())
 	toodledo.AddTasks([task])
-	tasks = toodledo.GetTasks(params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status,length,note,repeat"})
+	tasks = toodledo.GetTasks(
+		params={"fields": "startdate,duedate,tag,star,priority,duedatemod,status,length,note,repeat,parent"})
 	assert isinstance(tasks, list)
 	assert len(tasks) >= 1
 
@@ -28,6 +29,7 @@ def CreateATask(toodledo, task):
 	assert hasattr(task, "length") is False or task.length == returnedTask.length
 	assert hasattr(task, "note") is False or task.note == returnedTask.note
 	assert hasattr(task, "repeat") is False or task.repeat == returnedTask.repeat
+	assert hasattr(task, "parent") is False or task.parent == returnedTask.parent
 
 	return returnedTask
 
@@ -76,8 +78,12 @@ def test_set_note(toodledo):
 	task = CreateATask(toodledo, Task(note="This is a note"))
 	toodledo.DeleteTasks([task])
 
-def test_repeat(toodledo):
+def test_set_repeat(toodledo):
 	task = CreateATask(toodledo, Task(repeat="FREQ=YEARLY"))
+	toodledo.DeleteTasks([task])
+
+def test_set_parent(toodledo):
+	task = CreateATask(toodledo, Task(parent=12345))
 	toodledo.DeleteTasks([task])
 
 def test_set_priority(toodledo):
