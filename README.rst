@@ -19,3 +19,26 @@ Usage
   account = toodledo.GetAccount()
 
   allTasks = toodledo.GetTasks(params={})
+
+Running tests
+=============
+
+To run the tests, set the following environment variables:
+
+- TOODLEDO_TOKEN_STORAGE - path to a json file which will contain the credentials
+- TOODLEDO_CLIENT_ID - your client id (see https://api.toodledo.com/3/account/doc_register.php)
+- TOODLEDO_CLIENT_SECRET - your client secret (see https://api.toodledo.com/3/account/doc_register.php)
+
+Then generate the credentials json file by running
+
+.. code-block:: bash
+
+  python generate-credentials.py
+
+Then run the tests by executing
+
+.. code-block:: bash
+
+  pytest
+
+in the root directory.

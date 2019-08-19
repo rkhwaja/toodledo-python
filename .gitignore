@@ -1,6 +1,6 @@
 build/*
 dist/*
-toodledo.egg-info/*
+toodledo.egg-info
 .pytest_cache
 poetry.lock
 *.pyc
