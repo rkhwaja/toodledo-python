@@ -1,6 +1,8 @@
 from datetime import date
+from os import environ
 from uuid import uuid4
 
+from pytest import mark
 from toodledo import DueDateModifier, Priority, Status, Task
 
 def CreateATask(toodledo, task):
@@ -82,6 +84,7 @@ def test_set_repeat(toodledo):
 	task = CreateATask(toodledo, Task(repeat="FREQ=YEARLY"))
 	toodledo.DeleteTasks([task])
 
+@mark.skipif('TOODLEDO_FREE_VERSION' in environ, reason="Parents don't work in free version")
 def test_set_parent(toodledo):
 	task = CreateATask(toodledo, Task(parent=12345))
 	toodledo.DeleteTasks([task])
