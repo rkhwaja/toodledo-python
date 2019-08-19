@@ -16,7 +16,7 @@ class AuthorizationNeeded(Exception):
 
 class ToodledoSession(OAuth2Session):
 	"""Refresh token when we get a 429 error"""
-	def request(self, method, url, data=None, headers=None, withhold_token=False, client_id=None, client_secret=None, **kwargs):
+	def request(self, method, url, data=None, headers=None, withhold_token=False, client_id=None, client_secret=None, **kwargs): # pylint: disable=too-many-arguments
 		response = super(ToodledoSession, self).request(method, url, headers=headers, data=data, **kwargs)
 		if response.status_code != 429:
 			return response
