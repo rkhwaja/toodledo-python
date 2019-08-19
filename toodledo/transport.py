@@ -1,7 +1,7 @@
 """Implementation"""
 
 from json import dumps
-from logging import debug, error
+from logging import debug, error, warning
 
 from requests_oauthlib import OAuth2Session
 
@@ -13,6 +13,17 @@ from .task import _DumpTaskList, _TaskSchema
 
 class AuthorizationNeeded(Exception):
 	"""Thrown when the token storage doesn't contain a token"""
+
+class ToodledoSession(OAuth2Session):
+	"""Refresh token when we get a 429 error"""
+	def request(self, method, url, data=None, headers=None, withhold_token=False, client_id=None, client_secret=None, **kwargs): # pylint: disable=too-many-arguments
+		response = super(ToodledoSession, self).request(method, url, headers=headers, data=data, **kwargs)
+		if response.status_code != 429:
+			return response
+		warning("Received 429 error - refreshing token and retrying")
+		token = self.refresh_token(Toodledo.tokenUrl, **self.auto_refresh_kwargs)
+		self.token_updater(token)
+		return super(ToodledoSession, self).request(method, url, headers=headers, data=data, **kwargs)
 
 class Toodledo:
 	"""Wrapper for the Toodledo v3 API"""
@@ -43,7 +54,7 @@ class Toodledo:
 		if token is None:
 			raise AuthorizationNeeded("No token in storage")
 
-		return OAuth2Session(
+		return ToodledoSession(
 			client_id=self.clientId, token=token, auto_refresh_kwargs={
 				"client_id": self.clientId,
 				"client_secret": self.clientSecret
