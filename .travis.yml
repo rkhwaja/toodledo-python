@@ -6,7 +6,7 @@ python:
 dist: xenial
 sudo: true
 install:
-- pip install marshmallow requests-oauthlib requests
+- pip install marshmallow==2.20.1 requests-oauthlib requests
 - pip install --pre pylint astroid
 - pip install pytest
 script:
