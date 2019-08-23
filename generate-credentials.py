@@ -6,6 +6,7 @@ from contextlib import suppress
 from os import environ
 
 from toodledo import CommandLineAuthorization, TokenStorageFile, Toodledo
+from travis_env import travis_env
 
 def EscapeForBash(token):
 	charactersToEscape = "{}\"[]: "
@@ -25,6 +26,8 @@ if __name__ == "__main__":
 		from pyperclip import copy
 		with open(environ["TOODLEDO_TOKEN_STORAGE"]) as f:
 			token = f.read()
+		if "TRAVIS_TOKEN" in environ:
+			travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=token)
 		token = EscapeForBash(token)
 		copy(token)
-		print("Escaped token copied to clipboard - update Travis TOODLEDO_TOKEN_READONLY environment variable")
+		print("Escaped token copied to clipboard")

@@ -4,21 +4,21 @@ from os import environ
 from pytest import fixture
 
 from toodledo import TokenStorageFile, Toodledo
+from travis_env import travis_env
 
 class TokenReadOnly:
 	"""Read the API tokens from an environment variable"""
 
-	def __init__(self, name):
-		self.name = name
+	def __init__(self):
 		self.token = self.Load()
 
 	def Save(self, token): # pylint: disable=no-self-use
 		"""Do nothing - this may cause a problem if the refresh token changes"""
-		self.token = token
+		travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=token)
 
 	def Load(self):
 		"""Load and return the token. Called by Toodledo class"""
-		return loads(environ[self.name])
+		return travis_env.vars(environ["TRAVIS_REPO"])["TOODLEDO_TOKEN_READONLY"]
 
 @fixture
 def toodledo():
@@ -26,5 +26,5 @@ def toodledo():
 		tokenStorage = TokenStorageFile(environ["TOODLEDO_TOKEN_STORAGE"])
 	else:
 		# for travis
-		tokenStorage = TokenReadOnly("TOODLEDO_TOKEN_READONLY")
+		tokenStorage = TokenReadOnly()
 	return Toodledo(clientId=environ["TOODLEDO_CLIENT_ID"], clientSecret=environ["TOODLEDO_CLIENT_SECRET"], tokenStorage=tokenStorage, scope="basic tasks notes folders write")

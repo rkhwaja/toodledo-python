@@ -20,6 +20,7 @@ python = ">=3.5"
 marshmallow = "^2.16"
 requests-oauthlib = "^1.0"
 requests = "^2.20"
+travis-env = "^2019.4"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.1"
