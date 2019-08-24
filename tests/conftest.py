@@ -16,7 +16,7 @@ class TokenReadOnly:
 		"""Do nothing - this may cause a problem if the refresh token changes"""
 		travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=token)
 
-	def Load(self):
+	def Load(self): # pylint: disable=no-self-use
 		"""Load and return the token. Called by Toodledo class"""
 		return loads(travis_env.vars(environ["TRAVIS_REPO"])["TOODLEDO_TOKEN_READONLY"])
 
