@@ -1,4 +1,4 @@
-from json import loads
+from json import dumps, loads
 from os import environ
 
 from pytest import fixture
@@ -20,7 +20,7 @@ class TokenReadOnly:
 
 	def Save(self, token): # pylint: disable=no-self-use
 		"""Do nothing - this may cause a problem if the refresh token changes"""
-		travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=EscapeForBash(token))
+		travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=EscapeForBash(dumps(token)))
 		self.token = token
 
 	def Load(self): # pylint: disable=no-self-use
