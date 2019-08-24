@@ -1,5 +1,4 @@
 from json import loads
-from logging import info
 from os import environ
 
 from pytest import fixture
