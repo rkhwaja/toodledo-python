@@ -1,4 +1,5 @@
 from json import loads
+from logging import info
 from os import environ
 
 from pytest import fixture
@@ -24,6 +25,9 @@ class TokenReadOnly:
 
 	def Load(self): # pylint: disable=no-self-use
 		"""Load and return the token. Called by Toodledo class"""
+		test_var = travis_env.vars(environ["TRAVIS_REPO"])["test_var"]
+		info(f"test_var: {test_var}")
+		assert loads(test_var)["A"] == "&"
 		return loads(travis_env.vars(environ["TRAVIS_REPO"])["TOODLEDO_TOKEN_READONLY"])
 
 @fixture
