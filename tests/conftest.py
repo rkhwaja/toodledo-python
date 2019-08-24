@@ -2,9 +2,9 @@ from json import loads
 from os import environ
 
 from pytest import fixture
+from travis_env import travis_env
 
 from toodledo import TokenStorageFile, Toodledo
-from travis_env import travis_env
 
 class TokenReadOnly:
 	"""Read the API tokens from an environment variable"""
@@ -18,7 +18,7 @@ class TokenReadOnly:
 
 	def Load(self):
 		"""Load and return the token. Called by Toodledo class"""
-		return travis_env.vars(environ["TRAVIS_REPO"])["TOODLEDO_TOKEN_READONLY"]
+		return loads(travis_env.vars(environ["TRAVIS_REPO"])["TOODLEDO_TOKEN_READONLY"])
 
 @fixture
 def toodledo():
