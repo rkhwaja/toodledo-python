@@ -26,8 +26,8 @@ if __name__ == "__main__":
 		from pyperclip import copy
 		with open(environ["TOODLEDO_TOKEN_STORAGE"]) as f:
 			token = f.read()
+		token = EscapeForBash(token)
 		if "TRAVIS_TOKEN" in environ:
 			travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=token)
-		token = EscapeForBash(token)
 		copy(token)
 		print("Escaped token copied to clipboard")

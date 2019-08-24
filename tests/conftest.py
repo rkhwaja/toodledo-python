@@ -6,6 +6,12 @@ from travis_env import travis_env
 
 from toodledo import TokenStorageFile, Toodledo
 
+def EscapeForBash(token):
+	charactersToEscape = "{}\"[]: "
+	for character in charactersToEscape:
+		token = token.replace(character, "\\" + character)
+	return token
+
 class TokenReadOnly:
 	"""Read the API tokens from an environment variable"""
 
@@ -14,7 +20,7 @@ class TokenReadOnly:
 
 	def Save(self, token): # pylint: disable=no-self-use
 		"""Do nothing - this may cause a problem if the refresh token changes"""
-		travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=token)
+		travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=EscapeForBash(token))
 
 	def Load(self): # pylint: disable=no-self-use
 		"""Load and return the token. Called by Toodledo class"""
