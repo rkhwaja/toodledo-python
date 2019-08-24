@@ -29,5 +29,6 @@ if __name__ == "__main__":
 		token = EscapeForBash(token)
 		if "TRAVIS_TOKEN" in environ:
 			travis_env.update(environ["TRAVIS_REPO"], TOODLEDO_TOKEN_READONLY=token)
+			print("Token written to TRAVIS environment variable")
 		copy(token)
 		print("Escaped token copied to clipboard")
