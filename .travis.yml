@@ -10,6 +10,6 @@ install:
 script:
 - pylint toodledo
 - pylint tests --disable=missing-docstring
-- pytest --log-cli-level=INFO -k test_get_account
+- pytest --log-cli-level=INFO
 after_success:
 - coveralls
