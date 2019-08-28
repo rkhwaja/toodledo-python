@@ -10,3 +10,4 @@ poetry.lock
 .venv
 .style.yapf
 .idea
+pip-wheel-metadata
