@@ -65,7 +65,7 @@ class Toodledo:
 		warning("Received 429 error - refreshing token and retrying")
 		token = self._Session().refresh_token(Toodledo.tokenUrl, client_id=self.clientId, client_secret=self.clientSecret)
 		self.tokenStorage.Save(token)
-		return self._Session().get(url)
+		return self._Session().get(url, **kwargs)
 
 	def GetFolders(self):
 		"""Get all the folders as folder objects"""
