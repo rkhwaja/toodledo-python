@@ -14,17 +14,6 @@ from .task import _DumpTaskList, _TaskSchema
 class AuthorizationNeeded(Exception):
 	"""Thrown when the token storage doesn't contain a token"""
 
-class ToodledoSession(OAuth2Session):
-	"""Refresh token when we get a 429 error"""
-	def request(self, method, url, data=None, headers=None, withhold_token=False, client_id=None, client_secret=None, **kwargs): # pylint: disable=too-many-arguments
-		response = super(ToodledoSession, self).request(method, url, headers=headers, data=data, **kwargs)
-		if response.status_code != 429:
-			return response
-		warning("Received 429 error - refreshing token and retrying")
-		token = self.refresh_token(Toodledo.tokenUrl, **self.auto_refresh_kwargs)
-		self.token_updater(token)
-		return super(ToodledoSession, self).request(method, url, headers=headers, data=data, **kwargs)
-
 class Toodledo:
 	"""Wrapper for the Toodledo v3 API"""
 	baseUrl = "https://api.toodledo.com/3/"
@@ -54,7 +43,7 @@ class Toodledo:
 		if token is None:
 			raise AuthorizationNeeded("No token in storage")
 
-		return ToodledoSession(
+		return OAuth2Session(
 			client_id=self.clientId, token=token, auto_refresh_kwargs={
 				"client_id": self.clientId,
 				"client_secret": self.clientSecret
@@ -64,7 +53,7 @@ class Toodledo:
 		response = self._Session().post(url, **kwargs)
 		if response.status_code != 429:
 			return response
- 		warning("Received 429 error - refreshing token and retrying")
+		warning("Received 429 error - refreshing token and retrying")
 		token = self._Session().refresh_token(Toodledo.tokenUrl, client_id=self.clientId, client_secret=self.clientSecret)
 		self.tokenStorage.Save(token)
 		return self._Session().post(url, **kwargs)
@@ -73,7 +62,7 @@ class Toodledo:
 		response = self._Session().get(url, **kwargs)
 		if response.status_code != 429:
 			return response
- 		warning("Received 429 error - refreshing token and retrying")
+		warning("Received 429 error - refreshing token and retrying")
 		token = self._Session().refresh_token(Toodledo.tokenUrl, client_id=self.clientId, client_secret=self.clientSecret)
 		self.tokenStorage.Save(token)
 		return self._Session().get(url)
