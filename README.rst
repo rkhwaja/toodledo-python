@@ -2,6 +2,8 @@ Overview
 ========
 Python wrapper for the Toodledo v3 API which is documented at http://api.toodledo.com/3/
 
+**As of October 2019, I'm not using Toodledo anymore so there will be no more updates to this repository.**
+
 .. image:: https://travis-ci.org/rkhwaja/toodledo-python.svg?branch=master
    :target: https://travis-ci.org/rkhwaja/toodledo-python
 
